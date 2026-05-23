@@ -1,1 +1,526 @@
-
+{
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Giriş Paneli",
+        "formDescription": "Lütfen sektör ve şehir giriniz.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Sektör"
+            },
+            {
+              "fieldLabel": "Şehir"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -544,
+        160
+      ],
+      "id": "f6e69a1e-0c36-498f-8368-51672ad2e673",
+      "name": "On form submission",
+      "webhookId": "86c8e62c-0a99-4234-8296-f37a2545bc0c"
+    },
+    {
+      "parameters": {
+        "operation": "google_maps",
+        "q": "={{ $json['Sektör'] }} {{ $json['Şehir'] }}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        160
+      ],
+      "id": "4be4fa1c-238e-4737-a18e-e09e196152f5",
+      "name": "Google_maps search",
+      "credentials": {
+        "serpApi": {
+          "id": "UXp7GwCP6ZMgvi2p",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "35ebbf4c-3115-4854-98e5-9b124af789b8",
+              "leftValue": "={{ $json.local_results[6].website }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ false }}",
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -208,
+        160
+      ],
+      "id": "83063ba4-a916-48c9-8bbb-c63deff460cd",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen profesyonel bir web tasarım ve performans uzmanısın. Adın İrem.\n\nİşletme Bilgileri:\n\nAdı: {{ $node[\"Google_maps search\"].json.local_results[0].title }}\n\nMevcut Altyapı: {{ $node[\"Code in JavaScript\"].json.technology }}\n\nGörevin: İşletmenin sitesinin bakımsız kaldığını ve yeni nesil standartlara (hız, SEO, mobil uyum) uymadığını vurgulayarak yeni bir site satmak.\n\nWhatsApp Mesaj Taslağı:\n\n'Merhaba [İşletme Adı] ekibi, ben İrem. Sitenizi teknik olarak incelediğimde, [Mevcut Altyapı] kurulumunun artık güncel web standartlarını karşılamadığını ve bu yüzden özellikle mobil hızda yavaş kalarak müşteri kaybına neden olduğunu fark ettim.' diyerek başla.\n\n'Mevcut sitenizi güncelleyerek ya da daha modern bir yapıya taşıyarak Google’da üst sıralara çıkmanızı sağlayacak bir dönüşüm hazırladım.' de.\n\nReferans Bölümü: 'Daha önce hayata geçirdiğim projelerimi ve özgeçmişimi buradan inceleyebilirsiniz: [LİNKİN]. Referanslarımda göreceğiniz üzere, işletmeleri dijitalde en profesyonel ve hızlı şekilde temsil etmeye odaklanıyorum.'\n\n'Sizin için hazırladığım ön çalışmayı paylaşmak için mesajınızı bekliyorum.'\n\nKural: Altyapının kendisini değil, mevcut kurulumun eskimişliğini suçla. Bu sayede sen de WordPress yapsan bile \"Ben güncel ve hızlı olanı yapıyorum\" diyebilirsin.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        192,
+        -80
+      ],
+      "id": "70f6eae2-f54c-4a6a-b1ef-0eef1ac9af31",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        160,
+        64
+      ],
+      "id": "ea7e10d5-fa5c-418c-b9e4-2a6a5e691da7",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "zmb2lFxTGtdok198",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        96,
+        368
+      ],
+      "id": "74283658-39a2-4cb8-aa0f-7f3726c84b46",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "zmb2lFxTGtdok198",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen profesyonel bir itibar yönetimi uzmanısın. Adın İrem.\n\nİşletme Bilgileri:\n\nAdı: {{ $node[\"Google_maps search\"].json.local_results[0].title }}\n\nPuanı: {{ $node[\"Google_maps search\"].json.local_results[0].rating }}\n\nGörevin: İşletmenin puanına göre strateji belirle.\n\nSenaryo A (Puan 4.0 ve üzeriyse):\n'Google'daki başarınız ve yüksek puanınız dikkatimi çekti. Bu başarıyı profesyonel bir web sitesiyle taçlandırarak güveninizi artırmanızı öneririm.' de.\n\nSenaryo B (Puan 4.0 altındaysa):\n'Google üzerindeki müşteri geri bildirimlerinizi inceledim. Dijital dünyada daha profesyonel ve kontrol edilebilir bir imaj çizmeniz için size özel bir web sitesiyle itibar yönetimi yapmayı teklif ediyorum.' de.\n\nWhatsApp Mesaj Taslağı:\n'Merhaba [İşletme Adı] ekibi, ben İrem. Bölgenizdeki dijital varlıkları incelerken profilinize rastladım. [Senaryo A veya B'ye göre cümle kur]. Hazırladığım taslağı konuşmak isterseniz buradayım.'\n\nKural: Puan kötüyse asla 'Harikasınız' deme, 'Geliştirilmesi gereken noktalar var' diyerek yaklaş.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        16,
+        176
+      ],
+      "id": "b7c96e5e-c415-417b-bc2f-8b612d5d8828",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_cpiWeeaQxDRpVtCJNntlLlpf0SKa5Jv_wrxcRJhUPM",
+          "mode": "list",
+          "cachedResultName": "Müşteri Listesi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_cpiWeeaQxDRpVtCJNntlLlpf0SKa5Jv_wrxcRJhUPM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_cpiWeeaQxDRpVtCJNntlLlpf0SKa5Jv_wrxcRJhUPM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "İşletme Adı": "={{ $('Google_maps search').item.json.local_results[0].title }}",
+            "Sektör": "={{ $('On form submission').item.json['Sektör'] }}",
+            "Şehir": "={{ $('On form submission').item.json['Şehir'] }}",
+            "Web Sitesi": "={{ $node[\"Google_maps search\"].json.local_results[0].website || \"Yok\" }}",
+            "Google Puanı": "={{ $('Google_maps search').item.json.local_results[0].rating }}",
+            "Yapay Zeka Teklifi": "={{ $json.text }}",
+            "Durum (Web Var/Yok)": "={{ $json.website ? \"Var\" : \"Yok\" }}",
+            "Whatsapp Link": "=https://wa.me/{{ $node[\"Google_maps search\"].json.local_results[0].phone.replace(/\\D/g,'').replace(/^0+/, '').startsWith('90') ? $node[\"Google_maps search\"].json.local_results[0].phone.replace(/\\D/g,'').replace(/^0+/, '') : '90' + $node[\"Google_maps search\"].json.local_results[0].phone.replace(/\\D/g,'').replace(/^0+/, '') }}?text={{ encodeURIComponent($json.text) }}",
+            "Eklenme Tarihi": "={{ $now.toFormat('dd/MM/yyyy HH:mm') }}",
+            "Yorum Sayısı": "={{ $('Google_maps search').item.json.local_results[0].reviews }}",
+            "Telefon": "={{ $node[\"Google_maps search\"].json.local_results[0].phone }}",
+            "Teknik Analiz Notu": "={{ $node[\"HTTP Request\"].status === 200 ? \"Site Aktif\" : \"Site Hatalı/Erişim Yok\" }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "İşletme Adı",
+              "displayName": "İşletme Adı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sektör",
+              "displayName": "Sektör",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Şehir",
+              "displayName": "Şehir",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Web Sitesi",
+              "displayName": "Web Sitesi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Durum (Web Var/Yok)",
+              "displayName": "Durum (Web Var/Yok)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telefon",
+              "displayName": "Telefon",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Google Puanı",
+              "displayName": "Google Puanı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Yorum Sayısı",
+              "displayName": "Yorum Sayısı",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Yapay Zeka Teklifi",
+              "displayName": "Yapay Zeka Teklifi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Eklenme Tarihi",
+              "displayName": "Eklenme Tarihi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mesaj Durumu",
+              "displayName": "Mesaj Durumu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Geri Dönüş Oldu mu?",
+              "displayName": "Geri Dönüş Oldu mu?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Son İletişim Tarihi",
+              "displayName": "Son İletişim Tarihi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Whatsapp Link",
+              "displayName": "Whatsapp Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Teknik Analiz Notu",
+              "displayName": "Teknik Analiz Notu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        336,
+        80
+      ],
+      "id": "96feb1af-22ab-4f32-9bb7-494f9f2898c5",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "chQ1kMG8FNASVrhZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Google_maps search').item.json.local_results[0].website }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -240,
+        -64
+      ],
+      "id": "9f701e3a-3be1-4897-80dd-1441a06ed602",
+      "name": "HTTP Request",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = $node[\"HTTP Request\"].json.data || \"\";\nlet tech = \"Özel Yazılım\";\n\nif (html.includes(\"wp-content\")) tech = \"WordPress\";\nelse if (html.includes(\"elementor\")) tech = \"Elementor\";\nelse if (html.includes(\"shopify\")) tech = \"Shopify\";\nelse if (html.includes(\"wix.com\")) tech = \"Wix\";\n\nreturn { technology: tech };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        -80
+      ],
+      "id": "0d297273-f90a-49ca-8b04-0e7613dd0750",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "chatId": "8754003754",
+        "text": "=🚀 YENİ DİJİTAL FIRSAT TESPİT EDİLDİ!\n\n🏢 İşletme: {{ $json['İşletme Adı'] }}\n⭐ Google Puanı: {{ $json['Google Puanı'] }}\n\n📝 Yapay Zeka Teklifi:\n{{ $json['Yapay Zeka Teklifi'] }}\n\n🔗 Müşteriye WhatsApp'tan Gönder:\n{{ $json['Whatsapp Link'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        592,
+        96
+      ],
+      "id": "f55d017f-4178-4a95-af6a-6432a04f4783",
+      "name": "Send a text message",
+      "webhookId": "1e268557-1fd5-4e7e-a6eb-1def69bfd94a",
+      "credentials": {
+        "telegramApi": {
+          "id": "PfBCb8IUx6fOGhjq",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Google_maps search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google_maps search": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "71d16b0bf6437da903d39a51ba6d88f4b3a89492fbdfcb595740568a7435333b"
+  }
+}
